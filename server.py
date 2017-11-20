@@ -20,15 +20,19 @@ class EchoHandler(socketserver.DatagramRequestHandler):
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
             Message = line.decode('utf-8').split(' ')[0]
-            if Message == 'INVITE':
-                pass
-            elif Message == 'BYE':
-                pass
-            elif Message == 'ACK':
-                pass
-            else:
-                self.wfile.write(b"SIP/2.0 405 Method Not Allowed \r\n\r\n")
-            print("El cliente nos manda " + Message)
+            if Message != '':
+                if Message == 'INVITE':
+                    line = ('SIP/2.0 100 Trying \r\n\r\n'
+                            + 'SIP/2.0 180 Ringing \r\n\r\n'
+                            + 'SIP/2.0 200 OK \r\n\r\n')
+                    self.wfile.write(bytes(line, 'utf-8'))
+                elif Message == 'BYE':
+                    pass
+                elif Message == 'ACK':
+                    pass
+                else:
+                    self.wfile.write(b"SIP/2.0 405 Method Not Allowed \r\n\r\n")
+                print("El cliente nos manda " + Message)
 
             # Si no hay más líneas salimos del bucle infinito
             if not line:
