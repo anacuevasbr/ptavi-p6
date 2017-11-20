@@ -18,23 +18,27 @@ class EchoHandler(socketserver.DatagramRequestHandler):
         while 1:
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
-            Message = line.decode('utf-8').split(' ')[0]
-            if Message != '':
-                if Message == 'INVITE':
-                    line = ('SIP/2.0 100 Trying \r\n\r\n'
-                            + 'SIP/2.0 180 Ringing \r\n\r\n'
-                            + 'SIP/2.0 200 OK \r\n\r\n')
-                    self.wfile.write(bytes(line, 'utf-8'))
-                elif Message == 'BYE':
-                    line = ('SIP/2.0 200 OK \r\n\r\n')
-                    self.wfile.write(bytes(line, 'utf-8'))
-                elif Message == 'ACK':
-                    audio = sys.argv[3]
-                    order = "./mp32rtp -i 127.0.0.1 -p 23032 < " + audio
-                    os.system(order)
+            Message = line.decode('utf-8').split(' ')
+            Method = str(Message[0])
+            if Method != '':
+                if len(Message) == 3 and str(Message[2].split("/")[0]) == 'SIP':
+                    if Method == 'INVITE':
+                        line = ('SIP/2.0 100 Trying \r\n\r\n'
+                                + 'SIP/2.0 180 Ringing \r\n\r\n'
+                                + 'SIP/2.0 200 OK \r\n\r\n')
+                        self.wfile.write(bytes(line, 'utf-8'))
+                    elif Method == 'BYE':
+                        line = ('SIP/2.0 200 OK \r\n\r\n')
+                        self.wfile.write(bytes(line, 'utf-8'))
+                    elif Method == 'ACK':
+                        audio = sys.argv[3]
+                        order = "./mp32rtp -i 127.0.0.1 -p 23032 < " + audio
+                        os.system(order)
+                    else:
+                        self.wfile.write(b"SIP/2.0 405 Method Not Allowed \r\n\r\n")
+                    print("El cliente nos manda " + str(Message[0]))
                 else:
-                    self.wfile.write(b"SIP/2.0 405 Method Not Allowed \r\n\r\n")
-                print("El cliente nos manda " + Message)
+                    self.wfile.write(b"SIP/2.0 400 Bad Request \r\n\r\n")
 
             # Si no hay más líneas salimos del bucle infinito
             if not line:
