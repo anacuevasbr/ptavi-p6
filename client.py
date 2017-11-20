@@ -28,7 +28,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
     my_socket.send(bytes(Message, 'utf-8'))
     data = my_socket.recv(1024)
     Message = data.decode('utf-8')
-    print(Message)
     M = Message.split(' ')[1]
 
 
