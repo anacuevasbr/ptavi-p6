@@ -3,7 +3,7 @@
 """
 Clase (y programa principal) para un servidor de eco en UDP simple
 """
-
+import os
 import socketserver
 import sys
 
@@ -15,7 +15,6 @@ class EchoHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
         # Escribe dirección y puerto del cliente (de tupla client_address)
-        self.wfile.write(b"Hemos recibido tu peticion")
         while 1:
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
@@ -27,9 +26,12 @@ class EchoHandler(socketserver.DatagramRequestHandler):
                             + 'SIP/2.0 200 OK \r\n\r\n')
                     self.wfile.write(bytes(line, 'utf-8'))
                 elif Message == 'BYE':
-                    pass
+                    line = ('SIP/2.0 200 OK \r\n\r\n')
+                    self.wfile.write(bytes(line, 'utf-8'))
                 elif Message == 'ACK':
-                    pass
+                    audio = sys.argv[3]
+                    order = "./mp32rtp -i 127.0.0.1 -p 23032 < " + audio
+                    os.system(order)
                 else:
                     self.wfile.write(b"SIP/2.0 405 Method Not Allowed \r\n\r\n")
                 print("El cliente nos manda " + Message)
@@ -45,7 +47,7 @@ if __name__ == "__main__":
 
     IP = sys.argv[1]
     PORT = int(sys.argv[2])
-    audio = sys.argv[3]
+    
     # Creamos servidor de eco y escuchamos
     serv = socketserver.UDPServer((IP, PORT), EchoHandler)
     print("Listening...")
