@@ -25,10 +25,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
     my_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     my_socket.connect((SERVER, PORT))
 
-    my_socket.send(bytes(Message, 'utf-8') + b'\r\n')
+    my_socket.send(bytes(Message, 'utf-8'))
     data = my_socket.recv(1024)
+    Message = data.decode('utf-8')
+    print(Message)
+    M = Message.split(' ')[1]
 
-    print('Recibido -- ', data.decode('utf-8'))
-    print("Terminando socket...")
 
-print("Fin.")
+    if M == '100':
+        Message = 'ACK sip:' + sys.argv[2] + ' SIP/2.0' + '\r\n\r\n'
+        my_socket.send(bytes(Message, 'utf-8'))
