@@ -10,7 +10,7 @@ import sys
 if len(sys.argv) != 3:
     sys.exit('Usage: python3 client.py method receiver@IP:SIPport')
 
-Method = sys.argv[1];
+Method = sys.argv[1]
 User = sys.argv[2].split('@')[0]
 Dir = sys.argv[2].split('@')[1]
 SERVER = Dir.split(':')[0]
@@ -29,7 +29,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
     data = my_socket.recv(1024)
     Message = data.decode('utf-8')
     M = Message.split(' ')[1]
-
 
     if M == '100':
         Message = 'ACK sip:' + sys.argv[2] + ' SIP/2.0' + '\r\n\r\n'
