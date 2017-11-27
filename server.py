@@ -48,6 +48,7 @@ class EchoHandler(socketserver.DatagramRequestHandler):
                     else:
                         self.wfile.write(b"SIP/2.0 405 Method" +
                                          "Not Allowed \r\n\r\n")
+                        print("SIP/2.0 405 Method Not Allowed \r\n\r\n")
                     print("El cliente nos manda " + str(Message[0]))
                 else:
                     self.wfile.write(b"SIP/2.0 400 Bad Request \r\n\r\n")
